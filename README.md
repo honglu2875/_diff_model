@@ -5,7 +5,7 @@ documenting scripts and workflows for diff model training.
 
 # General workflows
 - Prepare the original dataset for huggingface `load_dataset` to read (e.g. a json file. For jsonl.zst file, it would be fine too but would need a custom loading script).
-  - One can also start directly from hf datasets saved by `.save_to_disk` method. My script `run_clm_diff.py` will use `load_from_disk` api when seeing `--load_from_disk` flag and (folder name specified in `--dataset_name`).
+  - One can also start directly from hf datasets saved by `.save_to_disk` method. My script `run_clm_diff.py` will use `load_from_disk` api when seeing `--load_from_disk` flag (with folder name specified in `--dataset_name`).
 - Prepare the running script (be it an sbatch script or just a bash script). Look for the following new flags I introduced (detailed explanation see the top of source code):
   - `--concatenate_texts`: Only pass it when we want to try out the idea of concatenating all the texts and truncate into equal-size chunks (separated by EOS token). If not passed, we pad every string to the left by EOS.
   - `--train_diff_model`: Always pass it for diff models.
@@ -24,7 +24,7 @@ I have added a few things to this finetuning script. Now, it does the following 
 1. load dataset (containing at least 'train' split).
 2. add in dropout rate to the loaded model.
 3. tokenize (skip if `input_ids` is a column). Possibly throw away long samples (`--ignore_long_samples`).
-4. generate `labels` field by masking tokens before `<DFF>` (unless `--force_label` is not set and `labels` is already a column).
+4. generate `labels` field by masking tokens before `<DFF>` (unless `--force_label` is **not** set and `labels` is already a column).
 5. either concatenate or pad: **concatenate**: add an EOS to the end of every sample, and then concatenate all of them before truncating to `block_size`; **pad**: add EOS to the left of every sample. Fill `labels` with `-100` and `attention_mask` with `0` accordingly.
 6. sanity check, possibly save final dataset (`--save_final_dataset`).
 7. pass into `Trainer`.
