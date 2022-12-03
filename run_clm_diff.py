@@ -685,7 +685,7 @@ def main():
             # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
             with training_args.main_process_first(desc="grouping texts together"):
-                lm_datasets = tokenized_datasets.map(
+                lm_datasets = lm_datasets.map(
                     group_texts,
                     batched=True,
                     num_proc=data_args.preprocessing_num_workers,
